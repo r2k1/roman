@@ -1,6 +1,7 @@
 package roman
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 )
@@ -69,13 +70,15 @@ func ToArabic(roman string) (string, error) {
 	// attempt to parse incorrect input
 	letters, err := transformInput(roman)
 	if len(roman) == 0 {
-		//return "", mergeErrors(err, errors.New("input is empty"))
+		return "", mergeErrors(err, errors.New("input is empty"))
 	}
 	result := 0
 	for i := range letters {
 		current, ok := romanToInt[letters[i]]
 		if !ok {
-			return "", fmt.Errorf("internal error, unexpected character %s", strconv.QuoteRune(letters[i]))
+			err = mergeErrors(err,
+				fmt.Errorf("internal error, unexpected character %s", strconv.QuoteRune(letters[i])))
+			continue
 		}
 		next := 0
 		if i+1 < len(letters) {
